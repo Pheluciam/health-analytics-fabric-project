@@ -1,0 +1,24 @@
+# Secrets / environment
+.env
+*.pfx
+*.pem
+
+# Personal working docs (not part of the public project)
+TEACHING_PREFERENCES.md
+LEARNING_ROADMAP.md
+LEARNINGS.md
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# OS / editor noise
+Thumbs.db
+.DS_Store
+.vscode/
+
+# Power BI temp files
+*.pbix.tmp
+~$*.pbix
