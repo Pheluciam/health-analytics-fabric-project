@@ -5,12 +5,17 @@
 
 ---
 
-## Current state (as of Phase 0, 2026-06-12)
+## Current state (as of Phase 1, 2026-06-13)
 
-- **Phase:** 0 (setup) — in progress.
+- **Phase:** 1 (ingestion) — COMPLETE. Phase 2 (Silver) is next.
 - **Environment gate: PASSED 2026-06-12.** Fabric 60-day trial active,
   expires ~2026-08-11 (items deleted ~7 days after expiry).
-- **Build clock:** not yet started. Phase 1 (ingestion) is next.
+- **Build clock:** day 1 done. Bronze snapshot is frozen; the API is out of
+  the demo path from here on.
+- **Bronze inventory:** Files/bronze (5 list-endpoint JSONs) +
+  Files/bronze/data_items (33 data-items JSONs, ~1.2 GB total, two
+  legitimately-empty envelopes: MYH0037/38). Data version of record:
+  2026052802.
 
 ## Environment + identities
 
@@ -63,7 +68,29 @@ personal-account cookie doesn't hijack the sign-in.
   remote wired. README skeleton + .gitignore + folder scaffolding
   (pipelines/ notebooks/ powerbi/ docs/) in place.
 - Dashboard pages confirmed against the live measures fetch (PLAN §6).
-- Phase-boundary audit: caught + fixed three "mini" leaks on public-bound
-  files (M3-3). LEARNINGS M3-1..M3-4 banked.
+- Phase-boundary audit: caught + fixed three informal-label leaks on
+  public-bound files (M3-3). LEARNINGS M3-1..M3-4 banked.
 - Phase 0 COMPLETE. Next session: Phase 1 ingestion (forward-verify pass
   on Fabric Data Pipeline REST copy first).
+
+### Session 2 — 2026-06-13 (Phase 1)
+
+- Forward-verify pass: REST-to-Lakehouse-Files JSON copy path confirmed on
+  current Microsoft Learn docs; projected risks banked first (M3-5, M3-6).
+  Mid-session UI-drift reset → full doc sweep of every UI step (M3-7).
+- Built pl_ingest_myhospitals_bronze: two parameter-driven sequential
+  ForEach loops (5 list endpoints; 33 measure-code data-items), anonymous
+  REST connection conn_myhospitals_api, JSON sink to Bronze Files, empty
+  Mapping (hierarchical as-is copy), 10-min timeout / 2 retries per copy.
+- Run: 38/38 copies succeeded, ~16.5 min wall clock, zero retries used.
+- Verification PASSED: 5 + 33 files, sizes eyeballed, two 189 B files
+  traced to genuinely empty API results (M3-10).
+- Pipeline definition exported to pipelines/pl_ingest_myhospitals_bronze.json;
+  INGEST_PIPELINE.md walkthrough authored (three-layer pattern).
+- Payload-size reality vs scoping banked (M3-9); clone-drops-source-connection
+  gotcha banked (M3-8); data_version of record 2026052802 (M3-11).
+- Structural audit: leak-grep run; one informal-label restatement fixed in
+  this file. LEARNINGS M3-5..M3-11 banked.
+- Phase 1 COMPLETE. Next session: Phase 2 Silver (forward-verify pass on
+  PySpark/Delta in Fabric first; explicit schemas for the big data-items
+  reads per M3-9).

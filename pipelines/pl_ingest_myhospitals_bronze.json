@@ -1,0 +1,212 @@
+{
+    "name": "pl_ingest_myhospitals_bronze",
+    "properties": {
+        "description": "Ingests the AIHW MyHospitals API into the Bronze layer of lh_health_analytics as raw JSON files (snapshot pattern). Two sequential ForEach loops: one over the five list endpoints, one over the 33 measure codes for data-items. Courier mode - all transformation is deferred to the Silver notebook.",
+        "parameters": {
+            "p_list_endpoints": {
+                "type": "array",
+                "defaultValue": [
+                    { "endpoint": "measure-categories", "file": "measure_categories.json" },
+                    { "endpoint": "measures", "file": "measures.json" },
+                    { "endpoint": "datasets", "file": "datasets.json" },
+                    { "endpoint": "reporting-units", "file": "reporting_units.json" },
+                    { "endpoint": "reporting-unit-types", "file": "reporting_unit_types.json" }
+                ]
+            },
+            "p_measure_codes": {
+                "type": "array",
+                "defaultValue": [
+                    "MYH0001", "MYH0002", "MYH0003", "MYH0004", "MYH0005",
+                    "MYH0006", "MYH0007", "MYH0008", "MYH0009", "MYH0010",
+                    "MYH0011", "MYH0012", "MYH0013", "MYH0014", "MYH0015",
+                    "MYH0016", "MYH0017", "MYH0018", "MYH0019", "MYH0020",
+                    "MYH0021", "MYH0022", "MYH0023", "MYH0024", "MYH0030",
+                    "MYH0032", "MYH0033", "MYH0034", "MYH0035", "MYH0036",
+                    "MYH0037", "MYH0038", "MYH0039"
+                ]
+            }
+        },
+        "activities": [
+            {
+                "name": "ForEach_ListEndpoints",
+                "description": "Loops over the five MyHospitals list endpoints and lands each raw JSON response into the Lakehouse Bronze Files area (snapshot pattern, courier mode - no transformation).",
+                "type": "ForEach",
+                "dependsOn": [],
+                "typeProperties": {
+                    "items": {
+                        "value": "@pipeline().parameters.p_list_endpoints",
+                        "type": "Expression"
+                    },
+                    "isSequential": true,
+                    "activities": [
+                        {
+                            "name": "Copy_ListEndpoint_ToBronze",
+                            "description": "Copies one MyHospitals list endpoint (from @item().endpoint) as raw JSON into Bronze Files. No transformation - courier mode.",
+                            "type": "Copy",
+                            "dependsOn": [],
+                            "policy": {
+                                "timeout": "0.00:10:00",
+                                "retry": 2,
+                                "retryIntervalInSeconds": 30,
+                                "secureOutput": false,
+                                "secureInput": false
+                            },
+                            "typeProperties": {
+                                "source": {
+                                    "type": "RestSource",
+                                    "httpRequestTimeout": "00:01:40",
+                                    "requestInterval": "00.00:00:00.010",
+                                    "requestMethod": "GET",
+                                    "paginationRules": {
+                                        "supportRFC5988": "true"
+                                    },
+                                    "datasetSettings": {
+                                        "annotations": [],
+                                        "type": "RestResource",
+                                        "typeProperties": {
+                                            "relativeUrl": {
+                                                "value": "@item().endpoint",
+                                                "type": "Expression"
+                                            }
+                                        },
+                                        "schema": [],
+                                        "externalReferences": {
+                                            "connection": "0be39fc7-21aa-46ad-84ef-e23ccc42de29"
+                                        }
+                                    }
+                                },
+                                "sink": {
+                                    "type": "JsonSink",
+                                    "storeSettings": {
+                                        "type": "LakehouseWriteSettings"
+                                    },
+                                    "formatSettings": {
+                                        "type": "JsonWriteSettings"
+                                    },
+                                    "datasetSettings": {
+                                        "annotations": [],
+                                        "linkedService": {
+                                            "name": "lh_health_analytics",
+                                            "properties": {
+                                                "annotations": [],
+                                                "type": "Lakehouse",
+                                                "typeProperties": {
+                                                    "workspaceId": "b0b5d7cd-6793-4568-a0e9-e0cc73655634",
+                                                    "artifactId": "d6e9fa43-2cb8-479f-b80e-a5b0a16c3b78",
+                                                    "rootFolder": "Files"
+                                                }
+                                            }
+                                        },
+                                        "type": "Json",
+                                        "typeProperties": {
+                                            "location": {
+                                                "type": "LakehouseLocation",
+                                                "fileName": {
+                                                    "value": "@item().file",
+                                                    "type": "Expression"
+                                                },
+                                                "folderPath": "bronze"
+                                            }
+                                        },
+                                        "schema": {}
+                                    }
+                                },
+                                "enableStaging": false
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "ForEach_MeasureDataItems",
+                "description": "Loops over the 33 measure codes and lands each measures/{code}/data-items raw JSON response into Bronze Files (snapshot pattern, courier mode).",
+                "type": "ForEach",
+                "dependsOn": [],
+                "typeProperties": {
+                    "items": {
+                        "value": "@pipeline().parameters.p_measure_codes",
+                        "type": "Expression"
+                    },
+                    "isSequential": true,
+                    "activities": [
+                        {
+                            "name": "Copy_MeasureDataItems_ToBronze",
+                            "description": "Copies measures/{code}/data-items for one measure code (from @item()) as raw JSON into Bronze Files. No transformation - courier mode.",
+                            "type": "Copy",
+                            "dependsOn": [],
+                            "policy": {
+                                "timeout": "0.00:10:00",
+                                "retry": 2,
+                                "retryIntervalInSeconds": 30,
+                                "secureOutput": false,
+                                "secureInput": false
+                            },
+                            "typeProperties": {
+                                "source": {
+                                    "type": "RestSource",
+                                    "httpRequestTimeout": "00:01:40",
+                                    "requestInterval": "00.00:00:00.010",
+                                    "requestMethod": "GET",
+                                    "paginationRules": {
+                                        "supportRFC5988": "true"
+                                    },
+                                    "datasetSettings": {
+                                        "annotations": [],
+                                        "type": "RestResource",
+                                        "typeProperties": {
+                                            "relativeUrl": {
+                                                "value": "@concat('measures/', item(), '/data-items')",
+                                                "type": "Expression"
+                                            }
+                                        },
+                                        "schema": [],
+                                        "externalReferences": {
+                                            "connection": "0be39fc7-21aa-46ad-84ef-e23ccc42de29"
+                                        }
+                                    }
+                                },
+                                "sink": {
+                                    "type": "JsonSink",
+                                    "storeSettings": {
+                                        "type": "LakehouseWriteSettings"
+                                    },
+                                    "formatSettings": {
+                                        "type": "JsonWriteSettings"
+                                    },
+                                    "datasetSettings": {
+                                        "annotations": [],
+                                        "linkedService": {
+                                            "name": "lh_health_analytics",
+                                            "properties": {
+                                                "annotations": [],
+                                                "type": "Lakehouse",
+                                                "typeProperties": {
+                                                    "workspaceId": "b0b5d7cd-6793-4568-a0e9-e0cc73655634",
+                                                    "artifactId": "d6e9fa43-2cb8-479f-b80e-a5b0a16c3b78",
+                                                    "rootFolder": "Files"
+                                                }
+                                            }
+                                        },
+                                        "type": "Json",
+                                        "typeProperties": {
+                                            "location": {
+                                                "type": "LakehouseLocation",
+                                                "fileName": {
+                                                    "value": "@concat('data_items_', item(), '.json')",
+                                                    "type": "Expression"
+                                                },
+                                                "folderPath": "bronze/data_items"
+                                            }
+                                        },
+                                        "schema": {}
+                                    }
+                                },
+                                "enableStaging": false
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}
