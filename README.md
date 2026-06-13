@@ -7,7 +7,7 @@ admissions) ingested from the AIHW MyHospitals open REST API into a
 **PySpark**, modelled as a **star schema** in Delta, and served through a
 **Direct Lake Power BI semantic model** and a 3-page dashboard.
 
-> 🚧 In progress — Phase 0 (environment + scaffolding) complete.
+> 🚧 In progress — Phase 2 (Silver) complete. Phase 3 (Gold) next.
 
 ## Architecture
 
@@ -59,13 +59,15 @@ PII. API data version at audit: 2026031701.
 ## Repository structure
 
 ```
-PROJECT_PLAN.md       — locked scope, architecture rules, phase breakdown
-PROJECT_CONTEXT.md    — environment, identities, decision log
-ENGINEERING_STANDARDS.md — the 10-criteria quality bar every script meets
-pipelines/            — Fabric Data Pipeline definitions (exported JSON)
-notebooks/            — PySpark notebooks (Bronze→Silver→Gold)
-powerbi/              — Import-mode .pbix export + documented DAX measures
-docs/                 — walkthrough docs + dashboard screenshots
+PROJECT_PLAN.md           — locked scope, architecture rules, phase breakdown
+PROJECT_CONTEXT.md        — environment, identities, decision log
+ENGINEERING_STANDARDS.md  — the 10-criteria quality bar every script meets
+INGEST_PIPELINE.md        — Bronze ingestion pipeline walkthrough
+SILVER_NOTEBOOK.md        — Silver transformation notebook walkthrough (Phase 2)
+pipelines/                — Fabric Data Pipeline definitions (exported JSON)
+notebooks/                — PySpark notebooks (Bronze→Silver→Gold)
+powerbi/                  — Import-mode .pbix export + documented DAX measures
+docs/                     — dashboard screenshots
 ```
 
 ## How this project was built

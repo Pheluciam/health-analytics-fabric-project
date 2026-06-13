@@ -94,3 +94,30 @@ personal-account cookie doesn't hijack the sign-in.
 - Phase 1 COMPLETE. Next session: Phase 2 Silver (forward-verify pass on
   PySpark/Delta in Fabric first; explicit schemas for the big data-items
   reads per M3-9).
+
+### Session 3 — 2026-06-13 (Phase 2 — Silver)
+
+- Forward-verify pass: PySpark/Delta write path + schema-enabled Lakehouse
+  confirmed on current Microsoft Learn docs. Projected risks banked first
+  (M3-12, M3-13).
+- Built nb_silver_build: 6-cell PySpark notebook. Cell 1 imports + CREATE
+  SCHEMA IF NOT EXISTS silver + BOM-safe wholeTextFiles reader. Cells 2–5
+  flatten 5 small list-endpoint Bronze files to Silver Delta via schema
+  inference + explode("result"). Cell 6 flattens 33 data-items files using
+  an explicit PySpark schema (1.7 M rows).
+- Path fix mid-session: BRONZE path corrected from "/lakehouse/default/Files/bronze"
+  to "Files/bronze" after a 400 Bad Request (M3-14). Confirmed via
+  mssparkutils.fs.ls before retrying.
+- Old discovery/skeleton cell deleted from the notebook before shipping.
+- All 6 Silver tables written and verified:
+    silver.datasets              7,199 rows  | data_set_id nulls: 0
+    silver.measures                 33 rows  | measure_code nulls: 0
+    silver.measure_categories       12 rows  | measure_category_code nulls: 0
+    silver.reporting_unit_types      6 rows  | reporting_unit_type_code nulls: 0
+    silver.reporting_units       1,427 rows  | reporting_unit_code nulls: 0
+    silver.data_items        1,700,870 rows  | value nulls: 653,363 (expected suppressed rows — M3-15)
+- LEARNINGS M3-14, M3-15 banked.
+- nb_silver_build.ipynb saved to notebooks/ with confirmed row counts in comments.
+- Phase 2 COMPLETE. Next session: Phase 3 Gold (star schema build —
+  fact_measure_value + dim_hospital + dim_measure + dim_period +
+  dim_reported_measure; datasets period join at this layer).
