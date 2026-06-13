@@ -5,9 +5,10 @@
 
 ---
 
-## Current state (as of Phase 1, 2026-06-13)
+## Current state (as of Phase 3, 2026-06-13)
 
-- **Phase:** 1 (ingestion) — COMPLETE. Phase 2 (Silver) is next.
+- **Phase:** 3 (Gold star schema) — COMPLETE. Phase 4 (Power BI semantic
+  model + dashboard) is next.
 - **Environment gate: PASSED 2026-06-12.** Fabric 60-day trial active,
   expires ~2026-08-11 (items deleted ~7 days after expiry).
 - **Build clock:** day 1 done. Bronze snapshot is frozen; the API is out of
@@ -121,3 +122,35 @@ personal-account cookie doesn't hijack the sign-in.
 - Phase 2 COMPLETE. Next session: Phase 3 Gold (star schema build —
   fact_measure_value + dim_hospital + dim_measure + dim_period +
   dim_reported_measure; datasets period join at this layer).
+
+### Session 4 — 2026-06-13 (Phase 3 — Gold)
+
+- Forward-verify pass: Kimball load pattern + surrogate-key mechanics
+  confirmed on current Microsoft Learn docs (dimensional-modeling-load-tables,
+  updated 2025-04-06). Full UI-path audit of every screen this session touches
+  (import notebook, pin lakehouse + restart, run cells, view schema tables) —
+  M3-16, M3-17, M3-18 banked before any code.
+- Built nb_gold_build: 7-cell PySpark notebook. Cell 1 discovery (silver is the
+  schema source of truth — 4 of 5 silver tables had no enumerated columns in the
+  repo). Cells 2-5 build the four dims, Cell 6 the fact, Cell 7 verification.
+  Surrogate keys via row_number() over the business key (deterministic 1..N).
+- All five Gold tables written and verified:
+    gold.dim_period            54 rows  (15 financial years + 39 audit windows)
+    gold.dim_hospital       1,166 rows  (1,165 type-H + Unknown -1 member)
+    gold.dim_measure           33 rows
+    gold.dim_reported_measure 690 rows  (10 is_total aggregates)
+    gold.fact_measure_value 1,700,870 rows  (= silver.data_items; no loss/fan-out)
+- FK integrity PASSED: all four FK null counts 0; hospital_key -1 = 318,595 and
+  only on non-H types; every H row resolved; variant double-count test fired.
+- Two bugs caught and fixed mid-build (Phil drove a full one-at-a-time rerun
+  that surfaced them): dim_period "starts in July" misclassified Jul-Oct audit
+  windows as FYs — fixed to start-July AND end-June (M3-19); is_total "contains
+  total" flagged hip/knee procedures and missed "All patients" aggregates —
+  fixed to exact total/all-prefix match (M3-20). LEARNINGS M3-19..M3-21 banked.
+- Locked design decisions (M3-17): fact grain = one row per AIHW data item (all
+  reporting-unit types retained for benchmark context); dim_hospital H-only +
+  Unknown -1; degenerate reporting_unit_code/type on the fact.
+- nb_gold_build.ipynb saved to notebooks/ with confirmed row counts/logic.
+- Phase 3 COMPLETE. Next session: Phase 4 Power BI (Direct Lake semantic model
+  on Gold, relationships, documented DAX measures filtering suppression_count=0
+  and is_total, the three dashboard pages; Import-mode .pbix to repo).
