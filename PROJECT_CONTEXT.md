@@ -9,6 +9,20 @@
 
 - **Phase:** 3 (Gold star schema) — COMPLETE. Phase 4 (Power BI semantic
   model + dashboard) is next.
+
+## Repo / commit hygiene (read before staging at session close)
+
+- These files are gitignored by design and must NOT be staged or pushed —
+  they are personal working docs, updated on disk but kept local only:
+  LEARNINGS.md, TEACHING_PREFERENCES.md, LEARNING_ROADMAP.md.
+- MINI3_KICKOFF.md is excluded locally via .git/info/exclude (also never
+  pushed).
+- So at session close: LEARNINGS.md gets updated on disk (the ledger), but a
+  clean `git status` will NOT list it — that is correct, not a missed file.
+  Don't re-check whether LEARNINGS needs committing; it never does.
+- Public-facing artifacts that DO get committed each session: notebooks/,
+  pipelines/, powerbi/, docs/, README.md, PROJECT_CONTEXT.md, PROJECT_PLAN.md,
+  ENGINEERING_STANDARDS.md, and the *_NOTEBOOK.md / *_PIPELINE.md walkthroughs.
 - **Environment gate: PASSED 2026-06-12.** Fabric 60-day trial active,
   expires ~2026-08-11 (items deleted ~7 days after expiry).
 - **Build clock:** day 1 done. Bronze snapshot is frozen; the API is out of
