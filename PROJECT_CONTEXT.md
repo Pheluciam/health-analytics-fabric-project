@@ -5,10 +5,12 @@
 
 ---
 
-## Current state (as of Phase 3, 2026-06-13)
+## Current state (as of Phase 4, 2026-06-14)
 
-- **Phase:** 3 (Gold star schema) — COMPLETE. Phase 4 (Power BI semantic
-  model + dashboard) is next.
+- **Phase:** 4 (Power BI) — IN PROGRESS. Semantic models + relationships +
+  10 documented DAX measures DONE (both the Direct Lake web model and the
+  Import-mode .pbix). REMAINING for next session: the 3 dashboard pages, then
+  screenshots + README. Phases 0-3 COMPLETE.
 
 ## Repo / commit hygiene (read before staging at session close)
 
@@ -126,7 +128,7 @@ personal-account cookie doesn't hijack the sign-in.
 - Old discovery/skeleton cell deleted from the notebook before shipping.
 - All 6 Silver tables written and verified:
     silver.datasets              7,199 rows  | data_set_id nulls: 0
-    silver.measures                 33 rows  | measure_code nulls: 0
+    silver.measures_ref             33 rows  | measure_code nulls: 0  (renamed from silver.measures Phase 4: 'measures' is reserved in the semantic-model engine and broke SQL endpoint sync)
     silver.measure_categories       12 rows  | measure_category_code nulls: 0
     silver.reporting_unit_types      6 rows  | reporting_unit_type_code nulls: 0
     silver.reporting_units       1,427 rows  | reporting_unit_code nulls: 0
@@ -168,3 +170,39 @@ personal-account cookie doesn't hijack the sign-in.
 - Phase 3 COMPLETE. Next session: Phase 4 Power BI (Direct Lake semantic model
   on Gold, relationships, documented DAX measures filtering suppression_count=0
   and is_total, the three dashboard pages; Import-mode .pbix to repo).
+
+### Session 5 — 2026-06-14 (Phase 4 — Power BI semantic models + measures)
+
+- Forward-verify pass on current Power BI / Direct Lake / semantic-model docs
+  before any clicks; projected Phase 4 risks banked first (LEARNINGS M3-22, M3-23).
+- BLOCKER hit + fixed: the SQL analytics endpoint metadata sync was failing
+  silently because a Silver table was named "measures" — a reserved object name
+  in the Analysis Services / semantic-model engine ("Invalid AS model object name
+  … reserved string 'measures'"). No Gold/Silver schema surfaced to any model
+  picker until fixed. Renamed silver.measures -> silver.measures_ref; updated
+  nb_silver_build.ipynb, nb_gold_build.ipynb, and this doc. The pipeline's
+  "measures" API endpoint name is unchanged. (LEARNINGS M3-24 area / session note.)
+- Built the Direct Lake semantic model sm_health_analytics_gold in the Fabric web
+  (platform story): 5 Gold tables, star relationships (single-direction,
+  many-to-one, assume referential integrity), _Measures = {BLANK()} holder, 10
+  documented DAX measures.
+- Built the durable Import-mode .pbix in Power BI Desktop (connected to the SQL
+  analytics endpoint via the SQL Server connector, Organizational-account auth,
+  Import storage mode). Tables renamed to drop the "gold " prefix. Measures
+  bulk-loaded via the TMDL View from powerbi/measures.tmdl in a single Apply
+  (formats carried by formatString — no manual per-measure formatting).
+- TMDL gotchas banked (M3-25): script must start with createOrReplace;
+  createOrReplace can't convert an existing import table's partition to calculated
+  (delete the placeholder first). Percentage measures use custom format 0.0\%
+  (literal % with no x100) — AIHW stores percentages on a 0-100 scale, confirmed by
+  a SQL spot-check (MYH0005 values 59/44/34/46/65).
+- Artifacts saved: powerbi/measures.tmdl (re-runnable measure set),
+  powerbi/SEMANTIC_MODEL.md (canonical model doc), powerbi/health_analytics_dashboard.pbix
+  (Import model; dashboard pages still to come). *_safety.pbix working copy is
+  gitignored.
+- Process fix locked: PRE-SEND CHECKLIST added to the top of TEACHING_PREFERENCES.md
+  (paste-ables -> own code block; no inline backticks; action-only UI steps; never
+  assume UI / verify docs).
+- Phase 4 IN PROGRESS. Next session: build the 3 dashboard pages (ED performance,
+  Elective surgery, Hospital benchmarking map), Vic focus + national/peer benchmark;
+  then screenshots + README finalize.

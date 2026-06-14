@@ -22,3 +22,6 @@ Thumbs.db
 # Power BI temp files
 *.pbix.tmp
 ~$*.pbix
+
+# Power BI working/scratch copies (the canonical .pbix is committed; *_safety is local only)
+*_safety.pbix
