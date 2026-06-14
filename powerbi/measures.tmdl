@@ -5,32 +5,53 @@ createOrReplace
 		measure 'ED 4-Hour Departure Rate' = CALCULATE(AVERAGE(fact_measure_value[value]), fact_measure_value[suppression_count] = 0, dim_measure[measure_code] = "MYH0005", dim_reported_measure[is_total] = TRUE())
 			formatString: "0.0\%"
 
-		measure 'ED Presentations' = CALCULATE(SUM(fact_measure_value[value]), fact_measure_value[suppression_count] = 0, dim_measure[measure_code] = "MYH0011", dim_reported_measure[is_total] = TRUE())
+		measure 'ED Presentations' = CALCULATE(SUM(fact_measure_value[value]), fact_measure_value[suppression_count] = 0, dim_measure[measure_code] = "MYH0011")
 			formatString: "#,0"
 
-		measure 'ED Median Waiting Time' = CALCULATE(AVERAGE(fact_measure_value[value]), fact_measure_value[suppression_count] = 0, dim_measure[measure_code] = "MYH0010", dim_reported_measure[is_total] = TRUE())
-			formatString: "0"
-
-		measure 'Elective Median Wait' = CALCULATE(AVERAGE(fact_measure_value[value]), fact_measure_value[suppression_count] = 0, dim_measure[measure_code] = "MYH0009", dim_reported_measure[is_total] = TRUE())
-			formatString: "0"
-
-		measure 'Elective % Within Recommended Time' = CALCULATE(AVERAGE(fact_measure_value[value]), fact_measure_value[suppression_count] = 0, dim_measure[measure_code] = "MYH0008", dim_reported_measure[is_total] = TRUE())
+		measure 'ED Treatment Started On Time' = CALCULATE(AVERAGE(fact_measure_value[value]), fact_measure_value[suppression_count] = 0, dim_measure[measure_code] = "MYH0010")
 			formatString: "0.0\%"
 
-		measure 'Elective % Waited Over 365 Days' = CALCULATE(AVERAGE(fact_measure_value[value]), fact_measure_value[suppression_count] = 0, dim_measure[measure_code] = "MYH0007", dim_reported_measure[is_total] = TRUE())
+		measure 'ED Median Departure Time' = CALCULATE(AVERAGE(fact_measure_value[value]), fact_measure_value[suppression_count] = 0, dim_measure[measure_code] = "MYH0036", dim_reported_measure[is_total] = TRUE())
+			formatString: "0"
+
+		measure 'ED 90% Departure Time' = CALCULATE(AVERAGE(fact_measure_value[value]), fact_measure_value[suppression_count] = 0, dim_measure[measure_code] = "MYH0013", dim_reported_measure[is_total] = TRUE())
+			formatString: "0"
+
+		measure 'Elective Surgeries' = CALCULATE(SUM(fact_measure_value[value]), fact_measure_value[suppression_count] = 0, dim_measure[measure_code] = "MYH0006", dim_reported_measure[reported_measure_name] IN {"Urgent elective surgery", "Semi-urgent elective surgery", "Non-urgent elective surgery"})
+			formatString: "#,0"
+
+		measure 'Elective Median Wait' = CALCULATE(AVERAGE(fact_measure_value[value]), fact_measure_value[suppression_count] = 0, dim_measure[measure_code] = "MYH0009", dim_reported_measure[reported_measure_name] IN {"Urgent elective surgery", "Semi-urgent elective surgery", "Non-urgent elective surgery"})
+			formatString: "0"
+
+		measure 'Elective % Within Recommended Time' = CALCULATE(AVERAGE(fact_measure_value[value]), fact_measure_value[suppression_count] = 0, dim_measure[measure_code] = "MYH0008", dim_reported_measure[reported_measure_name] IN {"Urgent elective surgery", "Semi-urgent elective surgery", "Non-urgent elective surgery"})
 			formatString: "0.0\%"
+
+		measure 'Elective % Waited Over 365 Days' = CALCULATE(AVERAGE(fact_measure_value[value]), fact_measure_value[suppression_count] = 0, dim_measure[measure_code] = "MYH0007", dim_reported_measure[reported_measure_name] IN {"Cardio-thoracic surgery", "Ear, nose and throat surgery", "General surgery", "Gynaecology", "Neurosurgery", "Ophthalmology", "Orthopaedic surgery", "Plastic surgery", "Urology", "Vascular surgery", "Other surgery"})
+			formatString: "0.0\%"
+
+		measure 'National Benchmark Value' = CALCULATE(AVERAGE(fact_measure_value[value]), REMOVEFILTERS(dim_hospital), fact_measure_value[suppression_count] = 0, fact_measure_value[reporting_unit_type_code] = "NAT", dim_reported_measure[is_total] = TRUE())
+			formatString: "0.0"
 
 		measure 'Hospital Count' = CALCULATE(DISTINCTCOUNT(fact_measure_value[hospital_key]), fact_measure_value[hospital_key] <> -1, fact_measure_value[suppression_count] = 0)
 			formatString: "#,0"
 
-		measure 'National Benchmark Value' = CALCULATE(AVERAGE(fact_measure_value[value]), fact_measure_value[suppression_count] = 0, fact_measure_value[reporting_unit_type_code] = "NAT", dim_reported_measure[is_total] = TRUE())
-			formatString: "0.0"
-
-		measure 'Selected Value' = CALCULATE(AVERAGE(fact_measure_value[value]), fact_measure_value[suppression_count] = 0)
-			formatString: "0.0"
-
-		measure 'Suppressed Data Points' = CALCULATE(COUNTROWS(fact_measure_value), fact_measure_value[suppression_count] > 0)
+		measure 'Total Admissions' = CALCULATE(SUM(fact_measure_value[value]), fact_measure_value[suppression_count] = 0, dim_measure[measure_code] = "MYH0024", dim_reported_measure[reported_measure_name] = "Total")
 			formatString: "#,0"
+
+		measure 'Admissions Value' = CALCULATE(SUM(fact_measure_value[value]), fact_measure_value[suppression_count] = 0, dim_measure[measure_code] = "MYH0024")
+			formatString: "#,0"
+
+		measure 'Emergency Share %' = DIVIDE(CALCULATE(SUM(fact_measure_value[value]), fact_measure_value[suppression_count] = 0, dim_measure[measure_code] = "MYH0024", dim_reported_measure[reported_measure_name] IN {"Medical (emergency)", "Surgical (emergency)"}), [Total Admissions])
+			formatString: "0.0%"
+
+		measure 'Surgical Share %' = DIVIDE(CALCULATE(SUM(fact_measure_value[value]), fact_measure_value[suppression_count] = 0, dim_measure[measure_code] = "MYH0024", dim_reported_measure[reported_measure_name] IN {"Surgical (emergency)", "Surgical (non-emergency)"}), [Total Admissions])
+			formatString: "0.0%"
+
+		measure 'Childbirth Admissions' = CALCULATE(SUM(fact_measure_value[value]), fact_measure_value[suppression_count] = 0, dim_measure[measure_code] = "MYH0024", dim_reported_measure[reported_measure_name] = "Childbirth")
+			formatString: "#,0"
+
+		measure 'Length of Stay' = CALCULATE(AVERAGE(fact_measure_value[value]), fact_measure_value[suppression_count] = 0, dim_measure[measure_code] = "MYH0014")
+			formatString: "0.0"
 
 		partition _Measures = calculated
 			mode: import

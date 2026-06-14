@@ -206,3 +206,69 @@ personal-account cookie doesn't hijack the sign-in.
 - Phase 4 IN PROGRESS. Next session: build the 3 dashboard pages (ED performance,
   Elective surgery, Hospital benchmarking map), Vic focus + national/peer benchmark;
   then screenshots + README finalize.
+
+### Session 6 — 2026-06-14 (Phase 4 — Power BI pages 1 & 2 built; page 3 re-scoped)
+
+- **Page 1 ED Performance — DONE.** Title + subtitle, Financial Year slicer, 5 KPI
+  cards (ED Presentations, 4-Hour Departure Rate, Treatment Started On Time, Median
+  Departure Time, 90% Departure Time), Vic-vs-national trend line (MYH0005), top-10
+  hospitals by ED presentations bar. Page filters: type H + Victoria.
+- **Page 2 Elective Surgery — DONE.** Title + subtitle, FY slicer, 4 KPI cards
+  (Elective Surgeries, Median Wait, % Within Recommended, % Waited >365 Days), median
+  wait by hospital bar (top 10), wait-vs-on-time-rate bubble/scatter. Page filters:
+  type H + Victoria.
+- **Map is DEAD.** Azure Maps AND Bing Map/Filled Map are both blocked by tenant
+  settings on this trial tenant. Enabling needs the Fabric Administrator role granted
+  to phil-fabric (done this session via portal.azure.com as pheluciam@outlook.com →
+  Entra → Roles → Fabric Administrator) BUT the tenant-setting toggle path was
+  abandoned. Custom AppSource visuals (incl. circle/packed treemap) are also blocked
+  by the same add-in gating. Do NOT attempt map visuals or custom visuals next session.
+- **Measure data-structure learnings (verified against live AIHW API this session):**
+  - MYH0010/MYH0011 (ED waits/presentations) have NO is_total row — reported only by
+    triage category. Measures drop the is_total filter (sum/avg across triage).
+  - Elective MYH0006/0008/0009 split by clinical urgency (Urgent/Semi/Non-urgent);
+    MYH0007 splits by surgical specialty only. Measures filter by reported_measure_name
+    to the relevant MECE partition (urgency names, or the 11 specialty names).
+  - MYH0010 was MISLABELLED as "ED Median Waiting Time" — it is actually a %
+    ("% commenced treatment within recommended time"). Renamed "ED Treatment Started
+    On Time", reformatted 0.0\%. Real ED time metrics added: MYH0036 (median), MYH0013 (90%).
+  - State-level rows exist (reporting_unit_type_code = "S": Victoria, NSW, etc.);
+    national = "NAT". Used for the (now-superseded) benchmarking page.
+  - Percentages are 0-100 scale → format string 0.0\% (backslash before %, NO built-in
+    Percentage which x100s). All measures + formats set deterministically via TMDL
+    (powerbi/measures.tmdl), not the format dropdown.
+- **Page 3 RE-SCOPED — LOCKED PLAN for next session (Option C, Hospital Activity &
+  Patient Flow, Victoria).** The benchmarking version (Vic-vs-national cards + gauge +
+  state bar) was scrapped — gauge just echoed the cards, too thin. New plan:
+  - Theme: Hospital Activity & Patient Flow, Victoria. Title "Hospital Activity &
+    Patient Flow — Victoria"; subtitle "Admissions, emergency vs planned, and length
+    of stay · AIHW MyHospitals".
+  - Data (audited clean this session): admissions MYH0024 has a "Total" reported
+    measure PLUS 6 types (Medical emergency/non-emergency, Surgical emergency/
+    non-emergency, Childbirth, Mental health); data through 2023-24. Length of stay
+    MYH0014 is by medical condition (DRG-like; NO overall total) → only usable as a
+    by-condition visual. MYH0015 (% overnight) is ALSO by-condition (no overall total)
+    → DROPPED as a KPI. Cost (MYH0032) too thin (3 yrs, ends 2014-15) — rejected. Hand
+    hygiene (MYH0019) rejected as too trivial.
+  - 5 KPI cards: Total Admissions, Emergency Share %, Surgical Share %, Childbirth
+    Admissions, Hospital Count (hospitals reporting).
+  - 3 visuals, DISTINCT types (Phil wants no bar/line overload): (1) Treemap —
+    admissions by type (6 boxes, native rectangular treemap only); (2) Line — total
+    admissions over time, Victoria single line; (3) Bar — average length of stay by
+    top conditions (the ONLY bar on the page).
+  - Measures ALREADY DRAFTED in measures.tmdl (Session 6 close), ready to apply via
+    TMDL View next session: Total Admissions (MYH0024, rm="Total"); Admissions Value
+    (raw MYH0024, no rm filter — for the by-type treemap, visual-filter OUT "Total");
+    Emergency Share % (Medical+Surgical "emergency" / Total); Surgical Share % (both
+    Surgical types / Total); Childbirth Admissions (rm="Childbirth"); Length of Stay
+    (raw MYH0014 — for the by-condition bar). Computed shares use format "0.0%"
+    (built-in, x100, because DIVIDE returns a 0-1 fraction) — NOT 0.0\%. Scope Page 3
+    to Victoria + type H via PAGE filters (no state-level visuals on this page, so a
+    page filter is safe here, unlike the dropped benchmarking page).
+  - The 5 benchmarking measures (ED 4-Hour Rate Vic/National, ED 4-Hour Gap vs National,
+    Hospitals Beating National, Vic ED Rank) and 2 unused general measures (Selected
+    Value, Suppressed Data Points) were REMOVED from measures.tmdl this session. NOTE:
+    applying the new tmdl next session will break the current (to-be-deleted) Page 3
+    benchmarking visuals that reference them — that is intended; delete that page and
+    rebuild as Option C.
+  - At Page 3 completion: update README, SEMANTIC_MODEL.md, measures.tmdl, this doc.

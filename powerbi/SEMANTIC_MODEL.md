@@ -35,13 +35,37 @@ From `fact_measure_value` (many) to each dimension (one):
 | period_key | dim_period | period_key |
 | reported_measure_key | dim_reported_measure | reported_measure_key |
 
-## Measures (10)
+## Measures
+
+> **CANONICAL SOURCE: `powerbi/measures.tmdl` (18 measures as of Session 6, 2026-06-14).**
+> The per-measure DAX listed further below is the original 10-measure set and is now
+> PARTLY STALE — trust `measures.tmdl`, not the blocks below, where they differ.
+>
+> **Session-6 corrections (verified against the live AIHW API):**
+> - `ED Median Waiting Time` (MYH0010) was MISLABELLED — MYH0010 is a percentage
+>   ("% commenced treatment within recommended time"), not minutes. Renamed
+>   **ED Treatment Started On Time**, reformatted `0.0\%`.
+> - MYH0010 and MYH0011 (ED presentations) have **no is_total row** (reported only by
+>   triage category) — their measures DROP the `is_total` filter.
+> - Real ED time metrics added: **ED Median Departure Time** (MYH0036) and
+>   **ED 90% Departure Time** (MYH0013).
+> - Elective measures filter by `reported_measure_name` to a MECE partition, not
+>   is_total: MYH0006/0008/0009 use the 3 clinical-urgency names; MYH0007 uses the 11
+>   surgical-specialty names (it has no urgency split). **Elective Surgeries** (MYH0006)
+>   added.
+> - Benchmarking measures added for the (now-superseded) Vic-vs-national page:
+>   **ED 4-Hour Rate Vic**, **ED 4-Hour Rate National**, **ED 4-Hour Gap vs National**,
+>   **Hospitals Beating National**, **Vic ED Rank** (returns "X of 8" text; RANKX over
+>   the type-"S" state rows). These are slated for removal/repurposing when Page 3 is
+>   rebuilt as Hospital Activity & Patient Flow (see PROJECT_CONTEXT Session 6).
+> - All formats set deterministically via TMDL, NOT the format dropdown. Percentages
+>   use `0.0\%` (literal %, no x100).
 
 All numeric measures filter `suppression_count = 0` (clean values only) and, where
 a single aggregated grain is wanted, `dim_reported_measure[is_total] = TRUE()` to
 avoid double-counting across up to 127 reported-measure variants.
 
-Percentages are stored on a 0–100 scale by AIHW (e.g. 73.4 = 73.4%), so the three
+Percentages are stored on a 0–100 scale by AIHW (e.g. 73.4 = 73.4%), so the
 percentage measures use the custom format string `0.0\%` — the backslash makes the
 `%` a literal sign that is NOT multiplied by 100 (a bare `0.0%` would render 7340%).
 Confirmed against Microsoft Learn custom-format-strings docs.

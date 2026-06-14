@@ -78,8 +78,13 @@ Gold star schema → Power BI semantic model (Direct Lake) → 3-page dashboard.
 2. **Elective surgery** — median wait (MYH0009), % within clinically
    recommended time (MYH0008), % waited >365 days (MYH0007); by hospital
    and peer group.
-3. **Hospital benchmarking map** — lat/long map of Victorian hospitals,
-   peer-group comparison, drill to hospital scorecard.
+3. **Hospital activity & patient flow** (Victoria) — RE-SCOPED at Session 6. The
+   original "benchmarking map" is dead: Azure Maps + Bing maps + custom AppSource
+   visuals are all blocked by tenant settings, and peer-group is not a hospital
+   attribute in the data. New page: admissions (MYH0024 — Total + 6 types),
+   emergency vs planned, and length of stay by condition (MYH0014). Visuals: treemap
+   (admissions by type), single trend line (admissions over time), one bar (LOS by
+   condition). Full locked spec in PROJECT_CONTEXT.md Session 6.
 
 Every page is built from live-verified measures only.
 
