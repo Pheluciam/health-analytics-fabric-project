@@ -23,13 +23,13 @@
 
 ```mermaid
 flowchart LR
-    A[AIHW MyHospitals<br/>REST API] --> B[Fabric Data Pipeline<br/>Copy activity]
-    B --> C[(Lakehouse BRONZE<br/>raw JSON · frozen snapshot)]
-    C --> D[PySpark notebook<br/>flatten + conform]
-    D --> E[(Lakehouse SILVER<br/>Delta tables)]
-    E --> F[PySpark notebook<br/>star schema + tests]
-    F --> G[(Lakehouse GOLD<br/>fact + dimensions)]
-    G --> H[Power BI<br/>Direct Lake + Import<br/>3-page dashboard]
+    A["AIHW MyHospitals REST API"] --> B["Fabric Data Pipeline (Copy)"]
+    B --> C["Lakehouse BRONZE - raw JSON snapshot"]
+    C --> D["PySpark notebook - flatten and conform"]
+    D --> E["Lakehouse SILVER - Delta tables"]
+    E --> F["PySpark notebook - star schema and tests"]
+    F --> G["Lakehouse GOLD - fact and dimensions"]
+    G --> H["Power BI - Direct Lake and Import - 3-page dashboard"]
 ```
 
 ## Stack
@@ -129,17 +129,6 @@ double-counting. The emergency/planned care-type split is only reported for two
 years, so it appears as a current-state split (cards, by hospital) rather than a
 trend; length of stay has no national rollup, so the benchmark is the average
 across all Australian hospitals.
-
-## Data audit
-
-Data audit (2026-06-12): the AIHW MyHospitals API (myhospitalsapi.aihw.gov.au,
-open REST, no auth, CC-BY) was verified live before build start. 12 measure
-categories and 33 measures with full units metadata were confirmed, covering ED
-presentations, ED waiting times, time in ED, elective surgery, admissions and
-length of stay. Facts arrive as flat JSON data-items keyed by measure, reporting
-unit and data_set_id; reporting periods (2011-12 to current) attach via the
-datasets endpoint join. Volume is ~33 API calls for a full national snapshot;
-institutional aggregates only, zero PII. API data version at audit: 2026031701.
 
 ## Related projects
 
