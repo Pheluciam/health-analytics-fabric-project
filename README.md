@@ -2,7 +2,7 @@
 
 > End-to-end Microsoft Fabric analytics — AIHW MyHospitals open REST API →
 > Fabric Lakehouse medallion (Bronze → Silver → Gold) → PySpark star schema →
-> Direct Lake Power BI 3-page dashboard. Focused Build 3 of Phil's
+> Direct Lake Power BI 3-page dashboard. Focused Build 3 of my
 > data-engineering portfolio.
 
 **Status: COMPLETE — shipped 2026-06-15.** End-to-end and interview-ready: AIHW MyHospitals REST API → Fabric Data Pipeline → Lakehouse Bronze (raw JSON snapshot) → PySpark Silver (Delta) → Gold Kimball star schema (1.7M-row fact + 4 dimensions) → Direct Lake semantic model + Import-mode Power BI 3-page dashboard. Full build history, design decisions and session log live in `PROJECT_CONTEXT.md`, with the per-component walkthroughs in `INGEST_PIPELINE.md`, `GOLD_NOTEBOOK.md` and `powerbi/SEMANTIC_MODEL.md`.
@@ -24,11 +24,11 @@
 ```mermaid
 flowchart LR
     A["AIHW MyHospitals<br/>REST API"] --> B["Fabric Data Pipeline<br/>Copy activity"]
-    B --> C["Lakehouse BRONZE<br/>raw JSON snapshot"]
+    B --> C[("Lakehouse BRONZE<br/>raw JSON snapshot")]
     C --> D["PySpark Silver<br/>flatten + conform"]
-    D --> E["Lakehouse SILVER<br/>Delta tables"]
+    D --> E[("Lakehouse SILVER<br/>Delta tables")]
     E --> F["PySpark Gold<br/>star schema + tests"]
-    F --> G["Lakehouse GOLD<br/>fact + dimensions"]
+    F --> G[("Lakehouse GOLD<br/>fact + dimensions")]
     G --> H["Direct Lake<br/>semantic model"]
     G --> I["Import-mode<br/>.pbix"]
     M["measures.tmdl<br/>22 DAX measures"] --> H
@@ -137,7 +137,7 @@ across all Australian hospitals.
 
 ## Related projects
 
-Part of Phil's data-engineering portfolio — focused builds first, then full
+Part of my data-engineering portfolio — focused builds first, then full
 end-to-end platforms:
 
 - **Focused Build 1 — [operations-analytics-dbt-tableau-project](https://github.com/Pheluciam/operations-analytics-dbt-tableau-project)** — dbt testing + macros depth on a warehouse-distribution slice; PostgreSQL → dbt → Tableau.
