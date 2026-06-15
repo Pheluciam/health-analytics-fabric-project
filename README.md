@@ -23,13 +23,18 @@
 
 ```mermaid
 flowchart LR
-    A["AIHW MyHospitals REST API"] --> B["Fabric Data Pipeline (Copy)"]
-    B --> C["Lakehouse BRONZE - raw JSON snapshot"]
-    C --> D["PySpark notebook - flatten and conform"]
-    D --> E["Lakehouse SILVER - Delta tables"]
-    E --> F["PySpark notebook - star schema and tests"]
-    F --> G["Lakehouse GOLD - fact and dimensions"]
-    G --> H["Power BI - Direct Lake and Import - 3-page dashboard"]
+    A["AIHW MyHospitals<br/>REST API"] --> B["Fabric Data Pipeline<br/>Copy activity"]
+    B --> C["Lakehouse BRONZE<br/>raw JSON snapshot"]
+    C --> D["PySpark Silver<br/>flatten + conform"]
+    D --> E["Lakehouse SILVER<br/>Delta tables"]
+    E --> F["PySpark Gold<br/>star schema + tests"]
+    F --> G["Lakehouse GOLD<br/>fact + dimensions"]
+    G --> H["Direct Lake<br/>semantic model"]
+    G --> I["Import-mode<br/>.pbix"]
+    M["measures.tmdl<br/>22 DAX measures"] --> H
+    M --> I
+    H --> J["Power BI<br/>3-page dashboard"]
+    I --> J
 ```
 
 ## Stack
@@ -148,8 +153,3 @@ Phil McKechnie — Business Intelligence Analyst & Developer, Melbourne. 15+ yea
 across operations, supply chain and analytics; the last 5 in dedicated BI roles
 (SQL, Tableau, Power BI). Building a data-engineering portfolio across dbt, cloud
 warehouses and AWS-native lakehouse work.
-
-## Licence + attribution
-
-Source data: Australian Institute of Health and Welfare (AIHW) MyHospitals API,
-licensed CC-BY. This project is not affiliated with or endorsed by the AIHW.
