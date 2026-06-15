@@ -37,9 +37,45 @@ From `fact_measure_value` (many) to each dimension (one):
 
 ## Measures
 
-> **CANONICAL SOURCE: `powerbi/measures.tmdl` (18 measures as of Session 6, 2026-06-14).**
+> **CANONICAL SOURCE: `powerbi/measures.tmdl` (22 measures as of Session 7, 2026-06-15).**
 > The per-measure DAX listed further below is the original 10-measure set and is now
 > PARTLY STALE — trust `measures.tmdl`, not the blocks below, where they differ.
+>
+> **Session-7 changes (Page 3 build):** removed the 5 benchmarking measures and 2
+> unused general measures; added the Page-3 set — Total Admissions, Admissions Value,
+> Emergency Share %, Surgical Share %, Childbirth Admissions, Childbirth Share %,
+> Planned Share %, Emergency Admissions, Planned Admissions, Length of Stay,
+> National Length of Stay. The computed shares (Emergency / Surgical / Childbirth /
+> Planned) inline the Total-Admissions denominator inside `DIVIDE` rather than
+> referencing the `[Total Admissions]` measure — a measure-to-measure reference failed
+> to resolve on TMDL Apply ("cannot find Total Admissions"), so each share is
+> self-contained. Computed shares use `formatString: "0.0%"` (built-in percent, ×100,
+> because `DIVIDE` returns a 0–1 fraction) — NOT the `0.0\%` literal-percent form used
+> by the raw 0–100 AIHW percentage measures.
+>
+> **National Length of Stay** = MYH0014 averaged across ALL Australian hospitals
+> (`REMOVEFILTERS(dim_hospital)` + `reporting_unit_type_code = "H"`). NOT pinned to
+> `"NAT"` — MYH0014 has no national rollup row (length of stay is published per
+> hospital only), so a `"NAT"` filter returns BLANK. Used as the gauge target vs
+> Victoria's 3.9 days (national 3.7).
+>
+> **Page 3 = Hospital Activity & Patient Flow — Victoria.** Page filters: type H +
+> Victoria. Final layout: 5 KPI cards (Hospital Count, Total Admissions, Emergency
+> Share %, Surgical Share %, Childbirth Share %); top row = Top-10 hospitals stacked
+> bar (Emergency vs Planned Admissions, % on tooltip) + LOS gauge (Victoria vs
+> national); bottom full-width = Total Admissions trend line by financial year with a
+> median reference line. Financial Year slicer is synced across all three report pages;
+> each page's trend line is exempted from the slicer via Edit interactions so a
+> year-pick doesn't collapse it.
+>
+> **Data quirks found this session (see LEARNINGS M3-34..M3-39):** MYH0024 admissions
+> publishes the SAME admissions under several overlapping reported-measure groupings in
+> one column — summing the whole column triple-counts (the spurious 78.9M / 23.8M we
+> hit). Only `reported_measure_name = "Total"` (21.25M) or one MECE partition is safe.
+> The care-type split sums to 23.8M ≠ 21.3M (differential suppression coverage). The
+> emergency/planned care-type breakdown only exists for 2015-16 & 2016-17, so it cannot
+> be a time series. `dim_hospital[private]` is mostly null → unusable. MYH0018 bed days
+> and MYH0015 % overnight have no `is_total` row → no clean total to trend.
 >
 > **Session-6 corrections (verified against the live AIHW API):**
 > - `ED Median Waiting Time` (MYH0010) was MISLABELLED — MYH0010 is a percentage

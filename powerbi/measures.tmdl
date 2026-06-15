@@ -41,16 +41,31 @@ createOrReplace
 		measure 'Admissions Value' = CALCULATE(SUM(fact_measure_value[value]), fact_measure_value[suppression_count] = 0, dim_measure[measure_code] = "MYH0024")
 			formatString: "#,0"
 
-		measure 'Emergency Share %' = DIVIDE(CALCULATE(SUM(fact_measure_value[value]), fact_measure_value[suppression_count] = 0, dim_measure[measure_code] = "MYH0024", dim_reported_measure[reported_measure_name] IN {"Medical (emergency)", "Surgical (emergency)"}), [Total Admissions])
+		measure 'Emergency Share %' = DIVIDE(CALCULATE(SUM(fact_measure_value[value]), fact_measure_value[suppression_count] = 0, dim_measure[measure_code] = "MYH0024", dim_reported_measure[reported_measure_name] IN {"Medical (emergency)", "Surgical (emergency)"}), CALCULATE(SUM(fact_measure_value[value]), fact_measure_value[suppression_count] = 0, dim_measure[measure_code] = "MYH0024", dim_reported_measure[reported_measure_name] = "Total"))
 			formatString: "0.0%"
 
-		measure 'Surgical Share %' = DIVIDE(CALCULATE(SUM(fact_measure_value[value]), fact_measure_value[suppression_count] = 0, dim_measure[measure_code] = "MYH0024", dim_reported_measure[reported_measure_name] IN {"Surgical (emergency)", "Surgical (non-emergency)"}), [Total Admissions])
+		measure 'Surgical Share %' = DIVIDE(CALCULATE(SUM(fact_measure_value[value]), fact_measure_value[suppression_count] = 0, dim_measure[measure_code] = "MYH0024", dim_reported_measure[reported_measure_name] IN {"Surgical (emergency)", "Surgical (non-emergency)"}), CALCULATE(SUM(fact_measure_value[value]), fact_measure_value[suppression_count] = 0, dim_measure[measure_code] = "MYH0024", dim_reported_measure[reported_measure_name] = "Total"))
 			formatString: "0.0%"
 
 		measure 'Childbirth Admissions' = CALCULATE(SUM(fact_measure_value[value]), fact_measure_value[suppression_count] = 0, dim_measure[measure_code] = "MYH0024", dim_reported_measure[reported_measure_name] = "Childbirth")
 			formatString: "#,0"
 
+		measure 'Childbirth Share %' = DIVIDE(CALCULATE(SUM(fact_measure_value[value]), fact_measure_value[suppression_count] = 0, dim_measure[measure_code] = "MYH0024", dim_reported_measure[reported_measure_name] = "Childbirth"), CALCULATE(SUM(fact_measure_value[value]), fact_measure_value[suppression_count] = 0, dim_measure[measure_code] = "MYH0024", dim_reported_measure[reported_measure_name] = "Total"))
+			formatString: "0.0%"
+
+		measure 'Planned Share %' = DIVIDE(CALCULATE(SUM(fact_measure_value[value]), fact_measure_value[suppression_count] = 0, dim_measure[measure_code] = "MYH0024", dim_reported_measure[reported_measure_name] = "Total") - CALCULATE(SUM(fact_measure_value[value]), fact_measure_value[suppression_count] = 0, dim_measure[measure_code] = "MYH0024", dim_reported_measure[reported_measure_name] IN {"Medical (emergency)", "Surgical (emergency)"}), CALCULATE(SUM(fact_measure_value[value]), fact_measure_value[suppression_count] = 0, dim_measure[measure_code] = "MYH0024", dim_reported_measure[reported_measure_name] = "Total"))
+			formatString: "0.0%"
+
+		measure 'Emergency Admissions' = CALCULATE(SUM(fact_measure_value[value]), fact_measure_value[suppression_count] = 0, dim_measure[measure_code] = "MYH0024", dim_reported_measure[reported_measure_name] IN {"Medical (emergency)", "Surgical (emergency)"})
+			formatString: "#,0"
+
+		measure 'Planned Admissions' = CALCULATE(SUM(fact_measure_value[value]), fact_measure_value[suppression_count] = 0, dim_measure[measure_code] = "MYH0024", dim_reported_measure[reported_measure_name] = "Total") - CALCULATE(SUM(fact_measure_value[value]), fact_measure_value[suppression_count] = 0, dim_measure[measure_code] = "MYH0024", dim_reported_measure[reported_measure_name] IN {"Medical (emergency)", "Surgical (emergency)"})
+			formatString: "#,0"
+
 		measure 'Length of Stay' = CALCULATE(AVERAGE(fact_measure_value[value]), fact_measure_value[suppression_count] = 0, dim_measure[measure_code] = "MYH0014")
+			formatString: "0.0"
+
+		measure 'National Length of Stay' = CALCULATE(AVERAGE(fact_measure_value[value]), REMOVEFILTERS(dim_hospital), fact_measure_value[suppression_count] = 0, dim_measure[measure_code] = "MYH0014", fact_measure_value[reporting_unit_type_code] = "H")
 			formatString: "0.0"
 
 		partition _Measures = calculated

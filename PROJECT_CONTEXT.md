@@ -272,3 +272,47 @@ personal-account cookie doesn't hijack the sign-in.
     benchmarking visuals that reference them — that is intended; delete that page and
     rebuild as Option C.
   - At Page 3 completion: update README, SEMANTIC_MODEL.md, measures.tmdl, this doc.
+
+### Session 7 — 2026-06-15 (Phase 4 — Page 3 built; report finalised)
+
+- **Page 3 Hospital Activity & Patient Flow — DONE**, but NOT as the locked Option C
+  plan. The treemap and the LOS-by-condition bar were both abandoned mid-build once the
+  real data was audited (see below). Final page:
+  - Page filters: type H + Victoria. Title/subtitle as planned.
+  - 5 KPI cards (reordered + childbirth changed to a share for consistency): Hospital
+    Count, Total Admissions, Emergency Share %, Surgical Share %, Childbirth Share %.
+    Victoria values: 232 hospitals, 21.3M admissions, 39.1% / 18.9% / 3.8%.
+  - Visual 1: Top-10 hospitals stacked bar — Emergency vs Planned Admissions, Total +
+    Emergency/Planned Share % on tooltip.
+  - Visual 2: Gauge — average Length of Stay, Victoria 3.9 days vs National 3.7
+    (national = all-Australia hospital average; max set to 5).
+  - Visual 3 (bottom, full width): Total Admissions by financial year, line, with a
+    Median reference line (1.8M). Rises 1.53M (2011-12) → 2.12M (2024-25); total
+    reconciles to 21,250,871 = the card.
+  - Financial Year slicer SYNCED across all three pages (View → Sync slicers). Each
+    page's trend line exempted from the slicer via Edit interactions so a year-pick
+    doesn't collapse it.
+- **measures.tmdl now 22 measures.** Added this session: Childbirth Share %, Planned
+  Share %, Emergency Admissions, Planned Admissions, National Length of Stay. Shares are
+  self-contained (inline the "Total" denominator — a `[Total Admissions]` reference
+  fails on TMDL Apply). National LOS uses `REMOVEFILTERS(dim_hospital)` +
+  `reporting_unit_type_code="H"` (NOT "NAT" — no national rollup for LOS).
+- **Why the plan changed — data audit findings (full detail LEARNINGS M3-34..M3-41):**
+  - MYH0024 stores overlapping reported-measure groupings in one column → summing the
+    column triple-counts (78.9M / 23.8M vs the true 21.25M Total). Treemap of admissions
+    by reported_measure_name exploded (50-60 categories) → ABANDONED.
+  - Care-type 7-way split sums to 23.8M ≠ 21.3M (differential suppression) → a waterfall
+    with a grand total would show two different totals → ABANDONED.
+  - Emergency/planned care-type split only exists for 2015-16 & 2016-17 → not a time
+    series. So emergency/planned lives in the cards + the by-hospital bar, not a trend.
+  - `dim_hospital[private]` mostly null → public/private donut dead.
+  - MYH0018 bed days / MYH0015 % overnight have no is_total row → no clean trend.
+  - The audit that should have come first: a matrix (measure_name × financial_year,
+    is_total filter) showing every measure's clean coverage at a glance.
+- **PROCESS NOTE for future viz sessions:** mock visual OPTIONS first (visualize tool),
+  verify each option's data with a coverage matrix, THEN build only the winner. Build-
+  fail-rebuild churn this session was avoidable. Full TMDL re-paste every change (Phil
+  locked this; no single-measure formula-bar edits).
+- **STILL TO DO (next session / at close):** capture Page 3 screenshots into README;
+  Save As the durable `powerbi/health_analytics_dashboard.pbix` (working copy is the
+  gitignored *_safety.pbix); one commit + push (Phil runs git in PowerShell).

@@ -37,6 +37,18 @@ Unknown member (`hospital_key = -1`) absorbs the non-hospital facts. The fact
 also carries `reporting_unit_code` and `reporting_unit_type_code` as degenerate
 dimensions so benchmark rows remain sliceable by type.
 
+**Overlapping reported measures — a downstream double-count trap (banked Session 7).**
+`dim_reported_measure` holds every reported-measure variant across all 33 measures,
+and a single measure can publish the SAME values under several independent groupings
+in this one field — e.g. MYH0024 admissions carries a `"Total"` row PLUS a care-type
+partition (Medical/Surgical emergency & non-emergency, Childbirth, Mental health) that
+each re-sum to the total. Summing `value` across the whole `reported_measure_name`
+field therefore multi-counts (we saw 78.9M / 23.8M vs the true 21.25M). Downstream
+(DAX/SQL) must aggregate either the `is_total` row or ONE mutually-exclusive partition,
+never the raw field. The `is_total` flag (name = "total" / starts with "all ") is the
+safe anchor; some measures (length of stay, % overnight, ED triage) have NO `is_total`
+row and must be averaged across their MECE partition instead. See LEARNINGS M3-35.
+
 **Period derivation.** The source has no financial-year column; periods are
 derived from the reporting start/end dates. A true Australian financial year
 must start in July **and** end in June — AIHW also publishes shorter

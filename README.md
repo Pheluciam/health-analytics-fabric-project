@@ -37,8 +37,23 @@ pipeline, notebook, Lakehouse, semantic model, and report.
    national benchmark.
 2. **Elective surgery** — median waiting time, % treated within clinically
    recommended time, % waiting >365 days; by hospital and peer group.
-3. **Hospital benchmarking map** — Victorian hospitals plotted by
-   location, peer-group comparison, drill-through to a hospital scorecard.
+3. **Hospital activity & patient flow (Victoria)** — admissions volume and
+   case-mix. Five KPI cards (hospital count, total admissions, emergency /
+   surgical / childbirth share); top-10 hospitals by admissions split
+   emergency vs planned; an average-length-of-stay gauge comparing Victoria
+   to the national hospital average; and a total-admissions trend over time
+   with a median reference line. (The original benchmarking-map concept was
+   dropped — Azure/Bing maps and custom visuals are blocked on the trial
+   tenant, and peer group is not a hospital attribute in the data.)
+
+A note on the admissions data: AIHW publishes the same admissions under
+several overlapping breakdowns in one field, so totals are taken from the
+explicit "Total" reported measure (or a single mutually-exclusive partition)
+to avoid double-counting. The emergency/planned care-type split is only
+reported for two years, so it appears as a current-state split (cards, by
+hospital) rather than a trend; length of stay has no national rollup, so the
+benchmark is the average across all Australian hospitals. Full data-quirk
+notes are in `LEARNINGS.md` (M3-34..M3-41) and `powerbi/SEMANTIC_MODEL.md`.
 
 _Screenshots land here at ship._
 
