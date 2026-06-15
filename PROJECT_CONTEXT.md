@@ -316,3 +316,49 @@ personal-account cookie doesn't hijack the sign-in.
 - **STILL TO DO (next session / at close):** capture Page 3 screenshots into README;
   Save As the durable `powerbi/health_analytics_dashboard.pbix` (working copy is the
   gitignored *_safety.pbix); one commit + push (Phil runs git in PowerShell).
+
+### Session 8 — 2026-06-15 (Phase 4 — readability audit, screenshots, README, SHIP)
+
+- **Readability audit of all 3 pages — DONE.** Phil drove the clicks; Claude
+  screenshotted each page and called out only what needed changing. Slicer +
+  tooltips + axes + labels + figure correctness checked on every page.
+- **Page 1 (ED Performance) fixes:** cards 4 & 5 relabelled to include the unit
+  ("ED Median Departure (mins)" / "ED 90% Departure (mins)" — Phil chose "mins"
+  over "min" to avoid the minimum/minute ambiguity); bottom bar retitled "Top 10
+  Hospitals by ED Presentations" (kept the scrollbar — Phil's call, the title
+  signals it's a Top 10); National Benchmark Value reformatted "0.0" -> "0.0\%"
+  so the national line reads as a % to match Victoria (was showing 71.0 vs 71.9%).
+- **Page 2 (Elective Surgery) fixes:** wait card relabelled "Elective Median Wait
+  (days)" and set to 0 decimals to match the whole-number bars; bar retitled "Top
+  10 Hospitals by Elective Median Wait"; scatter retitled "Hospital Elective
+  Performance: Median Wait, On-Time Rate & Surgery Volume" (bubble = Elective
+  Surgeries, confirmed in the Size well); bar X-axis field renamed "Elective
+  Median Wait (days)" so its tooltip + axis carry the unit.
+- **Page 3 (Hospital Activity) fixes:** the three share cards had the redundant
+  trailing "%" removed from their labels (Emergency Share / Surgical Share /
+  Childbirth Share — the value already shows %); gauge retitled "Length of Stay:
+  Victoria vs National (days)". Confirmed the stacked-bar tooltip is correct as-is
+  (each segment shows its own count + Total + both shares); a transient duplicate
+  Emergency Admissions row was removed from the Tooltips well.
+- **Slicer test passed on all 3 pages:** Financial Year = 2023-24 updated every
+  card and chart; each page's trend line correctly stayed full-history (exempt via
+  Edit interactions, by design).
+- **measures.tmdl:** still 22 measures; only change this session is National
+  Benchmark Value format -> "0.0\%". Full TMDL re-paste used (no formula-bar edits).
+- **Screenshots:** all 3 pages captured at slicer = All into
+  powerbi/screenshots/ (01_ed_performance.png, 02_elective_surgery.png,
+  03_hospital_activity.png); verified readable.
+- **Durable .pbix:** *_safety.pbix deleted; powerbi/health_analytics_dashboard.pbix
+  saved with final state.
+- **README fully rewritten** to the portfolio template (matches cdc-nt-gtfs /
+  financial-analytics-lakehouse): title = repo name, blockquote tagline, Status
+  line, What this project demonstrates, Mermaid Architecture, Stack table, Project
+  structure, How this project was built, Project documents, Dashboard (3 pages with
+  embedded screenshots + descriptions), Related projects, Author, Licence. Related
+  projects use the new two-tier scheme — Focused Build 1-3 / End-to-End Platform
+  1-3, ordered smaller -> larger, all linked, this repo marked "(this one)".
+  README references PROJECT_CONTEXT + walkthrough docs instead of LEARNINGS (the
+  latter is gitignored, so not on GitHub for this repo).
+- **MINI #3 SHIPPED.** This is the last build of the mini-projects block; the
+  6-8 week training journey + job applications begin next.
+- **At close:** one bundled commit + push (Phil runs git in PowerShell).

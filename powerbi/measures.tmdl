@@ -30,7 +30,7 @@ createOrReplace
 			formatString: "0.0\%"
 
 		measure 'National Benchmark Value' = CALCULATE(AVERAGE(fact_measure_value[value]), REMOVEFILTERS(dim_hospital), fact_measure_value[suppression_count] = 0, fact_measure_value[reporting_unit_type_code] = "NAT", dim_reported_measure[is_total] = TRUE())
-			formatString: "0.0"
+			formatString: "0.0\%"
 
 		measure 'Hospital Count' = CALCULATE(DISTINCTCOUNT(fact_measure_value[hospital_key]), fact_measure_value[hospital_key] <> -1, fact_measure_value[suppression_count] = 0)
 			formatString: "#,0"
